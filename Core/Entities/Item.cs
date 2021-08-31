@@ -2,11 +2,13 @@ using System;
 
 namespace Core.Entities
 {
-    public class Item
+    public class Item : BaseEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public DateTime? ExpirationDate {get;set;}
+        public string PictureUrl { get; set; }
+        public DateTime? ExpirationDate { get; set; }
+        public Stash Stash { get; set; }
+        public int StashId { get; set; }
     }
 }

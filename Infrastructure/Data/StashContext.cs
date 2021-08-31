@@ -11,5 +11,7 @@ namespace Infrastructure.Data
         }
 
         public DbSet<Item> Items { get; set; }
+
+        public DbSet<Stash> Stashes { get; set; }
     }
 }
