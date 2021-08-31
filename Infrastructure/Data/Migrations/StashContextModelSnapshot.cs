@@ -23,16 +23,22 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
+                        .HasMaxLength(250)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PictureUrl")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("StashId")
                         .HasColumnType("INTEGER");
@@ -51,15 +57,16 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
+                        .HasMaxLength(250)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Location")
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("MyProperty")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("OwnerId")

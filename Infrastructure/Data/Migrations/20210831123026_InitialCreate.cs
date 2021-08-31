@@ -13,11 +13,10 @@ namespace Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     OwnerId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Location = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    MyProperty = table.Column<int>(type: "INTEGER", nullable: false)
+                    Location = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -30,8 +29,9 @@ namespace Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 250, nullable: true),
                     PictureUrl = table.Column<string>(type: "TEXT", nullable: true),
                     ExpirationDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     StashId = table.Column<int>(type: "INTEGER", nullable: false)
