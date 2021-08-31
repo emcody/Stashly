@@ -22,6 +22,7 @@ namespace API
                 {
                     var context = services.GetRequiredService<StashContext>();
                     await context.Database.MigrateAsync();
+                    await StashContextSeed.SeedAsync(context,loggerFactory);
                 }
                 catch (Exception ex)
                 {
