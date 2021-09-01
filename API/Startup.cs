@@ -22,7 +22,7 @@ namespace API
         {
             services.AddControllers();
             services.AddDbContext<StashContext>(x => x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
-            services.AddScoped<IItemRepository, ItemRepository>();
+            services.AddScoped<IStashRepository, StashRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
