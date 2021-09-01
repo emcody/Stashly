@@ -27,12 +27,16 @@ namespace Infrastructure.Data
 
         public async Task<Stash> GetStashByIdAsync(int id)
         {
-            return await _context.Stashes.FindAsync(id);
+            return await _context.Stashes
+            .Include(s => s.Items)
+            .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<IReadOnlyList<Stash>> GetStashesAsync()
         {
-            return await _context.Stashes.ToListAsync();
+            return await _context.Stashes
+                .Include(s => s.Items)
+                .ToListAsync();
         }
 
         public async Task<IReadOnlyList<Item>> GetItemsByStashAsync(int stashId)
