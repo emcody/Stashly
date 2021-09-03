@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.Dtos;
 using Core.Entities;
@@ -25,11 +26,7 @@ namespace API.Controllers
             var stashesToReturn = new List<StashToReturnDto>();
             foreach (var stash in stashes)
             {
-                var itemsToReturn = new List<ItemToReturnDto>();
-                foreach (var item in stash.Items)
-                {
-                    itemsToReturn.Add(CreateItemDto(item));
-                }
+                var itemsToReturn = CreateListOfItemDto(stash.Items);
                 var stashToReturn = CreateStashDto(stash, itemsToReturn);
                 stashesToReturn.Add(stashToReturn);
             }
@@ -40,11 +37,7 @@ namespace API.Controllers
         public async Task<ActionResult<StashToReturnDto>> GetStashById(int id)
         {
             var stash = await _stashRepository.GetStashByIdAsync(id);
-            var itemsToReturn = new List<ItemToReturnDto>();
-            foreach (var item in stash.Items)
-            {
-                itemsToReturn.Add(CreateItemDto(item));
-            }
+            var itemsToReturn = CreateListOfItemDto(stash.Items);
             var stashToReturn = CreateStashDto(stash, itemsToReturn);
             return Ok(stashToReturn);
         }
@@ -53,15 +46,11 @@ namespace API.Controllers
         public async Task<ActionResult<Stash>> GetItemsOfStash(int id)
         {
             var items = await _stashRepository.GetItemsByStashAsync(id);
-            var itemsToReturn = new List<ItemToReturnDto>();
-            foreach (var item in items)
-            {
-                itemsToReturn.Add(CreateItemDto(item));
-            }
+            var itemsToReturn = CreateListOfItemDto(items);
             return Ok(itemsToReturn);
         }
 
-        private StashToReturnDto CreateStashDto(Stash stash, ICollection<ItemToReturnDto> items)
+        private StashToReturnDto CreateStashDto(Stash stash, IEnumerable<ItemToReturnDto> items)
         {
             return new StashToReturnDto
             {
@@ -70,7 +59,7 @@ namespace API.Controllers
                 Name = stash.Name,
                 Location = stash.Location,
                 OwnerId = stash.OwnerId,
-                Items = items
+                Items = items.ToList()
             };
         }
 
@@ -85,6 +74,15 @@ namespace API.Controllers
                 PictureUrl = item.PictureUrl,
                 ExpirationDate = item.ExpirationDate
             };
+        }
+        private IEnumerable<ItemToReturnDto> CreateListOfItemDto(IEnumerable<Item> items)
+        {
+            var itemsToReturn = new List<ItemToReturnDto>();
+            foreach (var item in items)
+            {
+                itemsToReturn.Add(CreateItemDto(item));
+            }
+            return itemsToReturn;
         }
     }
 }
