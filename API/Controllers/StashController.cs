@@ -43,7 +43,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}/items")]
-        public async Task<ActionResult<Stash>> GetItemsOfStash(int id)
+        public async Task<ActionResult<List<Item>>> GetItemsOfStash(int id)
         {
             var items = await _stashRepository.GetItemsByStashAsync(id);
             var itemsToReturn = CreateListOfItemDto(items);
