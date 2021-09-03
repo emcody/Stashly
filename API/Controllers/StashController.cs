@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using API.Dtos;
 using Core.Entities;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -21,21 +22,69 @@ namespace API.Controllers
         public async Task<ActionResult<List<Stash>>> GetStashes()
         {
             var stashes = await _stashRepository.GetStashesAsync();
-            return Ok(stashes);
+            var stashesToReturn = new List<StashToReturnDto>();
+            foreach (var stash in stashes)
+            {
+                var itemsToReturn = new List<ItemToReturnDto>();
+                foreach (var item in stash.Items)
+                {
+                    itemsToReturn.Add(CreateItemDto(item));
+                }
+                var stashToReturn = CreateStashDto(stash, itemsToReturn);
+                stashesToReturn.Add(stashToReturn);
+            }
+            return Ok(stashesToReturn);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Stash>> GetStashById(int id)
+        public async Task<ActionResult<StashToReturnDto>> GetStashById(int id)
         {
-            var stashes = await _stashRepository.GetStashByIdAsync(id);
-            return Ok(stashes);
+            var stash = await _stashRepository.GetStashByIdAsync(id);
+            var itemsToReturn = new List<ItemToReturnDto>();
+            foreach (var item in stash.Items)
+            {
+                itemsToReturn.Add(CreateItemDto(item));
+            }
+            var stashToReturn = CreateStashDto(stash, itemsToReturn);
+            return Ok(stashToReturn);
         }
 
         [HttpGet("{id}/items")]
         public async Task<ActionResult<Stash>> GetItemsOfStash(int id)
         {
             var items = await _stashRepository.GetItemsByStashAsync(id);
-            return Ok(items);
+            var itemsToReturn = new List<ItemToReturnDto>();
+            foreach (var item in items)
+            {
+                itemsToReturn.Add(CreateItemDto(item));
+            }
+            return Ok(itemsToReturn);
+        }
+
+        private StashToReturnDto CreateStashDto(Stash stash, ICollection<ItemToReturnDto> items)
+        {
+            return new StashToReturnDto
+            {
+                Id = stash.Id,
+                Description = stash.Description,
+                Name = stash.Name,
+                Location = stash.Location,
+                OwnerId = stash.OwnerId,
+                Items = items
+            };
+        }
+
+        private ItemToReturnDto CreateItemDto(Item item)
+        {
+            return new ItemToReturnDto
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Quantity = item.Quantity,
+                Description = item.Description,
+                PictureUrl = item.PictureUrl,
+                ExpirationDate = item.ExpirationDate
+            };
         }
     }
 }
