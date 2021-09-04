@@ -12,17 +12,19 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class StashesController : ControllerBase
     {
-        private readonly IStashRepository _stashRepository;
+        private readonly IGenericRepository<Stash> _stashRepository;
+        private readonly IGenericRepository<Item> _itemsRepository;
 
-        public StashesController(IStashRepository stashRepository)
+        public StashesController(IGenericRepository<Stash> stashRepository, IGenericRepository<Item> itemsRepository)
         {
-            this._stashRepository = stashRepository;
+            _stashRepository = stashRepository;
+            _itemsRepository = itemsRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Stash>>> GetStashes()
         {
-            var stashes = await _stashRepository.GetStashesAsync();
+            var stashes = await _stashRepository.ListAllAsync();
             var stashesToReturn = new List<StashToReturnDto>();
             foreach (var stash in stashes)
             {
@@ -36,7 +38,7 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StashToReturnDto>> GetStashById(int id)
         {
-            var stash = await _stashRepository.GetStashByIdAsync(id);
+            var stash = await _stashRepository.GetByIdAsync(id);
             var itemsToReturn = CreateListOfItemDto(stash.Items);
             var stashToReturn = CreateStashDto(stash, itemsToReturn);
             return Ok(stashToReturn);
