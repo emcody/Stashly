@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using API.Dtos;
 using Core.Entities;
 using Core.Interfaces;
+using Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -24,7 +25,9 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Stash>>> GetStashes()
         {
-            var stashes = await _stashRepository.ListAllAsync();
+            var spec = new StashWithItemsSpecification();
+            var stashes = await _stashRepository.ListAsync(spec);
+
             var stashesToReturn = new List<StashToReturnDto>();
             foreach (var stash in stashes)
             {
@@ -38,7 +41,9 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StashToReturnDto>> GetStashById(int id)
         {
-            var stash = await _stashRepository.GetByIdAsync(id);
+            var spec = new StashWithItemsSpecification(id);
+            var stash = await _stashRepository.GetEntityWithSpec(spec);
+
             var itemsToReturn = CreateListOfItemDto(stash.Items);
             var stashToReturn = CreateStashDto(stash, itemsToReturn);
             return Ok(stashToReturn);
@@ -47,7 +52,8 @@ namespace API.Controllers
         [HttpGet("{id}/items")]
         public async Task<ActionResult<List<Item>>> GetItemsOfStash(int id)
         {
-            var items = await _stashRepository.GetItemsByStashAsync(id);
+            var spec = new ItemsFromStashSpecification(id);
+            var items = await _itemsRepository.ListAsync(spec);
             var itemsToReturn = CreateListOfItemDto(items);
             return Ok(itemsToReturn);
         }
