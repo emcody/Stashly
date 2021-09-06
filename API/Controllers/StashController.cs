@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Dtos;
+using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Specifications;
@@ -15,26 +16,23 @@ namespace API.Controllers
     {
         private readonly IGenericRepository<Stash> _stashRepository;
         private readonly IGenericRepository<Item> _itemsRepository;
+        private readonly IMapper _mapper;
 
-        public StashesController(IGenericRepository<Stash> stashRepository, IGenericRepository<Item> itemsRepository)
+        public StashesController(IGenericRepository<Stash> stashRepository, IGenericRepository<Item> itemsRepository, IMapper mapper)
         {
+            _mapper = mapper;
             _stashRepository = stashRepository;
             _itemsRepository = itemsRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Stash>>> GetStashes()
+        public async Task<ActionResult<IReadOnlyList<StashToReturnDto>>> GetStashes()
         {
             var spec = new StashWithItemsSpecification();
             var stashes = await _stashRepository.ListAsync(spec);
 
-            var stashesToReturn = new List<StashToReturnDto>();
-            foreach (var stash in stashes)
-            {
-                var itemsToReturn = CreateListOfItemDto(stash.Items);
-                var stashToReturn = CreateStashDto(stash, itemsToReturn);
-                stashesToReturn.Add(stashToReturn);
-            }
+            var stashesToReturn = _mapper.Map<IReadOnlyList<Stash>,IReadOnlyList<StashToReturnDto>>(stashes);
+
             return Ok(stashesToReturn);
         }
 
@@ -44,48 +42,17 @@ namespace API.Controllers
             var spec = new StashWithItemsSpecification(id);
             var stash = await _stashRepository.GetEntityWithSpec(spec);
 
-            var itemsToReturn = CreateListOfItemDto(stash.Items);
-            var stashToReturn = CreateStashDto(stash, itemsToReturn);
+            var stashToReturn = _mapper.Map<Stash,StashToReturnDto>(stash);
             return Ok(stashToReturn);
         }
 
         [HttpGet("{id}/items")]
-        public async Task<ActionResult<List<Item>>> GetItemsOfStash(int id)
+        public async Task<ActionResult<IReadOnlyList<ItemToReturnDto>>> GetItemsOfStash(int id)
         {
             var spec = new ItemsFromStashSpecification(id);
             var items = await _itemsRepository.ListAsync(spec);
-            var itemsToReturn = CreateListOfItemDto(items);
+            var itemsToReturn = _mapper.Map<IReadOnlyList<Item>,IReadOnlyList<ItemToReturnDto>>(items);
             return Ok(itemsToReturn);
-        }
-
-        private StashToReturnDto CreateStashDto(Stash stash, IEnumerable<ItemToReturnDto> items)
-        {
-            return new StashToReturnDto
-            {
-                Id = stash.Id,
-                Description = stash.Description,
-                Name = stash.Name,
-                Location = stash.Location,
-                OwnerId = stash.OwnerId,
-                Items = items.ToList()
-            };
-        }
-
-        private ItemToReturnDto CreateItemDto(Item item)
-        {
-            return new ItemToReturnDto
-            {
-                Id = item.Id,
-                Name = item.Name,
-                Quantity = item.Quantity,
-                Description = item.Description,
-                PictureUrl = item.PictureUrl,
-                ExpirationDate = item.ExpirationDate
-            };
-        }
-        private IEnumerable<ItemToReturnDto> CreateListOfItemDto(IEnumerable<Item> items)
-        {
-            return items.Select(item => CreateItemDto(item));
         }
     }
 }
