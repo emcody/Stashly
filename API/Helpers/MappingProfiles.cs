@@ -10,7 +10,8 @@ namespace API.Helpers
         public MappingProfiles()
         {
             CreateMap<Stash,StashToReturnDto>();
-            CreateMap<Item,ItemToReturnDto>();
+            CreateMap<Item,ItemToReturnDto>()
+                .ForMember(i=>i.PictureUrl, o=> o.MapFrom<ItemUrlResolver>());
         }
     }
 }
