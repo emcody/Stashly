@@ -85,12 +85,7 @@ namespace API.Controllers
         }
         private IEnumerable<ItemToReturnDto> CreateListOfItemDto(IEnumerable<Item> items)
         {
-            var itemsToReturn = new List<ItemToReturnDto>();
-            foreach (var item in items)
-            {
-                itemsToReturn.Add(CreateItemDto(item));
-            }
-            return itemsToReturn;
+            return items.Select(item => CreateItemDto(item));
         }
     }
 }
