@@ -26,9 +26,9 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<StashToReturnDto>>> GetStashes()
+        public async Task<ActionResult<IReadOnlyList<StashToReturnDto>>> GetStashes(string sort)
         {
-            var spec = new StashWithItemsSpecification();
+            var spec = new StashWithItemsSpecification(sort);
             var stashes = await _stashRepository.ListAsync(spec);
 
             var stashesToReturn = _mapper.Map<IReadOnlyList<Stash>,IReadOnlyList<StashToReturnDto>>(stashes);
