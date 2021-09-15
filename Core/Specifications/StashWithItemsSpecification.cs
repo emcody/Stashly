@@ -4,7 +4,10 @@ namespace Core.Specifications
 {
     public class StashWithItemsSpecification : BaseSpecification<Stash>
     {
-        public StashWithItemsSpecification(string sort)
+        public StashWithItemsSpecification(string sort, string location)
+            : base(x =>
+                 (string.IsNullOrEmpty(location) || x.Location == location)
+            )
         {
             AddInclude(x => x.Items);
             AddOrderBy(x => x.Name);
