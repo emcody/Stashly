@@ -4,17 +4,18 @@ namespace Core.Specifications
 {
     public class StashWithItemsSpecification : BaseSpecification<Stash>
     {
-        public StashWithItemsSpecification(string sort, string location)
+        public StashWithItemsSpecification(StashSpecParams stashParams)
             : base(x =>
-                 (string.IsNullOrEmpty(location) || x.Location == location)
+                 (string.IsNullOrEmpty(stashParams.Location) || x.Location == stashParams.Location)
             )
         {
             AddInclude(x => x.Items);
             AddOrderBy(x => x.Name);
+            ApplyPaging(stashParams.PageSize * (stashParams.PageIndex - 1), stashParams.PageSize);
 
-            if (!string.IsNullOrEmpty(sort))
+            if (!string.IsNullOrEmpty(stashParams.Sort))
             {
-                switch (sort)
+                switch (stashParams.Sort)
                 {
                     case "ownerIdAsc":
                         AddOrderBy(s => s.OwnerId);
