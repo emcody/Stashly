@@ -6,6 +6,7 @@ namespace Core.Specifications
     {
         public StashWithItemsSpecification(StashSpecParams stashParams)
             : base(x =>
+                (string.IsNullOrEmpty(stashParams.Search) || x.Name.ToLower().Contains(stashParams.Search)) &&
                  (string.IsNullOrEmpty(stashParams.Location) || x.Location == stashParams.Location)
             )
         {
