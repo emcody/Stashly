@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Dtos;
+using API.Helpers;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
@@ -26,14 +27,19 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<StashToReturnDto>>> GetStashes()
+        public async Task<ActionResult<Pagination<StashToReturnDto>>> GetStashes(
+            [FromQuery] StashSpecParams stashParams)
         {
-            var spec = new StashWithItemsSpecification();
+            var spec = new StashWithItemsSpecification(stashParams);
+            var countSpec = new StashesWithFiltersForCountSpecification(stashParams);
+
+            var totalStashes = await _stashRepository.CountAsync(countSpec);
             var stashes = await _stashRepository.ListAsync(spec);
 
-            var stashesToReturn = _mapper.Map<IReadOnlyList<Stash>,IReadOnlyList<StashToReturnDto>>(stashes);
+ 
+            var data = _mapper.Map<IReadOnlyList<Stash>,IReadOnlyList<StashToReturnDto>>(stashes);
 
-            return Ok(stashesToReturn);
+            return Ok(new Pagination<StashToReturnDto>(stashParams.PageIndex,stashParams.PageSize,totalStashes,data));
         }
 
         [HttpGet("{id}")]
