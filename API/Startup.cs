@@ -1,5 +1,6 @@
 using System.Linq;
 using API.Errors;
+using API.Extensions;
 using API.Helpers;
 using API.Middleware;
 using Core.Interfaces;
@@ -50,6 +51,7 @@ namespace API
                     return new BadRequestObjectResult(errorResponse);
                 };
             });
+            services.AddIdentityServices();
             services.AddCors(opt =>
             {
                 opt.AddPolicy("CorsPolicy", policy =>
