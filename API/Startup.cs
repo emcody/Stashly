@@ -6,6 +6,7 @@ using API.Middleware;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Identity;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,7 @@ namespace API
             {
                 x.UseSqlite(_config.GetConnectionString("IdentityConnection"));
             });
+            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IStashRepository, StashRepository>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddAutoMapper(typeof(MappingProfiles));
@@ -51,7 +53,7 @@ namespace API
                     return new BadRequestObjectResult(errorResponse);
                 };
             });
-            services.AddIdentityServices();
+            services.AddIdentityServices(_config);
             services.AddCors(opt =>
             {
                 opt.AddPolicy("CorsPolicy", policy =>
@@ -75,6 +77,7 @@ namespace API
 
             app.UseCors("CorsPolicy");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
